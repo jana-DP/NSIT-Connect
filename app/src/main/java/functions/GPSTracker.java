@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -39,6 +40,13 @@ public class GPSTracker extends Service implements LocationListener {
         try {
             LocationManager locationManager = (LocationManager) mContext
                     .getSystemService(LOCATION_SERVICE);
+            Criteria criteria = new Criteria();
+            criteria.setAccuracy(Criteria.ACCURACY_FINE);
+            criteria.setPowerRequirement(Criteria.POWER_MEDIUM);
+            criteria.setAltitudeRequired(false);
+            criteria.setSpeedRequired(false);
+            criteria.setCostAllowed(true);
+            criteria.setBearingRequired(false);
 
             // getting GPS status
             boolean isGPSEnabled = locationManager
@@ -54,10 +62,15 @@ public class GPSTracker extends Service implements LocationListener {
                 this.canGetLocation = true;
                 // First get location from Network Provider
                 if (isNetworkEnabled) {
+
+//                    locationManager.requestLocationUpdates(
+//                            LocationManager.NETWORK_PROVIDER,
+//                            MIN_TIME_BW_UPDATES,
+//                            MIN_DISTANCE_CHANGE_FOR_UPDATES,  this);
                     locationManager.requestLocationUpdates(
-                            LocationManager.NETWORK_PROVIDER,
                             MIN_TIME_BW_UPDATES,
-                            MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
+                            MIN_DISTANCE_CHANGE_FOR_UPDATES,
+                            criteria, this, null);
                     location = locationManager
                             .getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
                     if (location != null) {
